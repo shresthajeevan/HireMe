@@ -91,10 +91,11 @@ const Index = () => {
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center md:h-16 gap-4 md:gap-0">
           {/* Logo Section */}
           <div className="flex-1 flex justify-start w-full md:w-auto">
-            <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-violet-300 via-purple-300 to-fuchsia-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(120,60,255,0.15)]">
+            <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-violet-300 via-purple-300 to-fuchsia-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(120,60,255,0.15)]">
               HireMeNow
             </h1>
           </div>
+
 
           {/* Centered Title Section */}
           <div className="text-center w-full md:w-auto">
@@ -220,43 +221,59 @@ const Index = () => {
         {/* Q&A Section */}
         <div className="max-w-7xl mx-auto mt-10">
           <Card className="p-4 sm:p-6 bg-[#1a1231]/80 border border-[#3a2a66] shadow-[0_0_18px_rgba(100,60,200,0.1)] backdrop-blur-md">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-100">Resume &amp; Job Q&amp;A</h2>
-            <div className="mt-4 max-h-[300px] overflow-y-auto space-y-2">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-100 mb-4">
+              Resume & Job Q&A
+            </h2>
+
+            {/* Chat messages */}
+            <div className="mt-2 max-h-[300px] overflow-y-auto space-y-3 px-2 py-1 scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-gray-800">
               {chatMessages.map((msg, idx) => (
-                <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
-                  <span className={msg.role === "user" ? "inline-block bg-violet-600 text-white rounded px-2 py-1" : "inline-block bg-gray-700 text-gray-200 rounded px-2 py-1"}>
+                <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <span
+                    className={`max-w-[75%] px-3 py-2 break-words rounded-lg ${msg.role === "user"
+                      ? "bg-violet-600 text-white rounded-br-none"
+                      : "bg-gray-700 text-gray-200 rounded-bl-none"
+                      }`}
+                  >
                     {msg.text}
                   </span>
                 </div>
               ))}
             </div>
+
+            {/* Chat input */}
             <div className="mt-4 flex space-x-2">
               <Textarea
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Ask about your resume..."
-                className="flex-1 min-h-[40px] resize-none bg-[#140a26] text-gray-100 border-[#3a2a66] focus-visible:ring-2 focus-visible:ring-violet-400"
+                className="flex-1 min-h-[44px] max-h-[120px] resize-none bg-[#140a26] text-gray-100 border border-[#3a2a66] rounded-md focus-visible:ring-2 focus-visible:ring-violet-400 px-3 py-2"
               />
-              <Button onClick={async () => {
-                if (!chatInput.trim()) return;
-                const userMsg: ChatMessage = { role: "user", text: chatInput.trim() };
-                setChatMessages((prev) => [...prev, userMsg]);
-                setChatInput("");
+              <Button
+                onClick={async () => {
+                  if (!chatInput.trim()) return;
+                  const userMsg: ChatMessage = { role: "user", text: chatInput.trim() };
+                  setChatMessages((prev) => [...prev, userMsg]);
+                  setChatInput("");
 
-                try {
-                  const reply = await chatWithAI(rawResume, jobDescription, userMsg.text);
-                  const aiMsg: ChatMessage = { role: "assistant", text: reply };
-                  setChatMessages((prev) => [...prev, aiMsg]);
-                } catch (error) {
-                  toast.error("Failed to get AI response");
-                  console.error(error);
-                }
-              }} disabled={loading} className="h-10 sm:h-12">
+                  try {
+                    const reply = await chatWithAI(rawResume, jobDescription, userMsg.text);
+                    const aiMsg: ChatMessage = { role: "assistant", text: reply };
+                    setChatMessages((prev) => [...prev, aiMsg]);
+                  } catch (error) {
+                    toast.error("Failed to get AI response");
+                    console.error(error);
+                  }
+                }}
+                disabled={loading}
+                className="h-10 sm:h-12 px-4 bg-violet-500 hover:bg-violet-600 text-white font-medium rounded-md transition-colors shadow-[0_0_6px_rgba(120,60,255,0.25)] flex items-center justify-center"
+              >
                 Send
               </Button>
             </div>
           </Card>
         </div>
+
       </main>
     </div>
   );
